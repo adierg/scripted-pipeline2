@@ -9,12 +9,9 @@ node {
         sh "rm -rf ansible-melodi && git clone https://github.com/ikambarov/ansible-melodi.git"
     }
 
-    withCredentials([sshUserPrivateKey(credentialsId: 'jenkinsmaster', keyFileVariable: 'SSHKEY', passphraseVariable: '', usernameVariable: 'SSHUSERNAME')]) {
-        stage("Install Melodi"){
-            sh """
-                export ANSIBLE_HOST_KEY_CHECKING=False
-                ansible-playbook -i "${params.node}," --private-key $SSHKEY ansible-melodi/main.yml -b -u $SSHUSERNAME
-            """
-        }
+    stage("Install Melodi"){
+        ansiblePlaybook become: true, colorized: true, credentialsId: 'jenkinsmaster', disableHostKeyChecking: true, inventory: '178.128.149.190', limit: 'all', playbook: 'ansible-melodi/main.yml'   
+        
     }    
 }
+
